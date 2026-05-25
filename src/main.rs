@@ -105,7 +105,7 @@ fn main() {
                         vec2.iter().find(|(n, _, _)| n == name)
                     ) {
                         if size1 != size2 {
-                            println!("~ {}", name);
+                            println!("~ {} ({} -> {})", name, size1, size2);
                         }
                     }
                 }
