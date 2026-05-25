@@ -44,9 +44,9 @@ fn test_compare_directories() {
     println!("Program output:\n{}", stdout);
 
     // Verify expected content in output - only differences with signs
-    assert!(stdout.contains("+ only2_nested.txt"), "Expected + only2_nested.txt in output, got:\n{}", stdout);
+    assert!(stdout.contains("+ nested\\only2_nested.txt"), "Expected + nested\\only2_nested.txt in output, got:\n{}", stdout);
     assert!(stdout.contains("+ unique2.txt"), "Expected + unique2.txt in output, got:\n{}", stdout);
-    assert!(stdout.contains("- only1_nested.txt"), "Expected - only1_nested.txt in output, got:\n{}", stdout);
+    assert!(stdout.contains("- nested\\only1_nested.txt"), "Expected - nested\\only1_nested.txt in output, got:\n{}", stdout);
     assert!(stdout.contains("- unique1.txt"), "Expected - unique1.txt in output, got:\n{}", stdout);
     // Make sure directory1 directory path does not appear in output
     let dir1_str = dir1_path.to_string_lossy().to_string();

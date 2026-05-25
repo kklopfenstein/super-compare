@@ -3,16 +3,17 @@ use std::fs;
 use std::path::PathBuf;
 use std::collections::HashSet;
 
-fn collect_files(dir: &PathBuf, files: &mut Vec<(String, PathBuf)>) {
+fn collect_files(dir: &PathBuf, original_dir: &PathBuf, files: &mut Vec<(String, PathBuf)>) {
     if let Ok(entries) = fs::read_dir(dir) {
         for entry in entries.flatten() {
             let entry_path = entry.path();
             if entry_path.is_file() {
-                // Strip the directory prefix to get relative path
-                let display = entry_path.strip_prefix(dir).unwrap_or(&entry_path);
+                // Strip the original directory prefix to get full relative path
+                let display = entry_path.strip_prefix(original_dir)
+                    .unwrap_or(&entry_path);
                 files.push((display.to_string_lossy().to_string(), entry_path.clone()));
             } else if entry_path.is_dir() {
-                collect_files(&entry_path, files);
+                collect_files(&entry_path, original_dir, files);
             }
         }
     }
@@ -39,14 +40,14 @@ fn main() {
 
     // Collect files from directory 1
     if dir1_path.exists() {
-        collect_files(&dir1_path, &mut vec1);
+        collect_files(&dir1_path, &dir1_path, &mut vec1);
         vec1.sort_by(|a, b| a.0.cmp(&b.0));
     }
 
     // Collect files from directory 2 if provided
     if let Some(path) = dir2_path {
         if path.exists() {
-            collect_files(&path, &mut vec2);
+            collect_files(&path, &path, &mut vec2);
             vec2.sort_by(|a, b| a.0.cmp(&b.0));
             
             // Compare the two vectors and output differences
