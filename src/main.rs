@@ -3,13 +3,14 @@ use std::fs;
 use std::path::PathBuf;
 use std::collections::HashSet;
 
-fn collect_files(dir: &PathBuf, files: &mut Vec<String>) {
+fn collect_files(dir: &PathBuf, files: &mut Vec<(String, PathBuf)>) {
     if let Ok(entries) = fs::read_dir(dir) {
         for entry in entries.flatten() {
             let entry_path = entry.path();
             if entry_path.is_file() {
+                // Strip the directory prefix to get relative path
                 let display = entry_path.strip_prefix(dir).unwrap_or(&entry_path);
-                files.push(display.to_string_lossy().to_string());
+                files.push((display.to_string_lossy().to_string(), entry_path.clone()));
             } else if entry_path.is_dir() {
                 collect_files(&entry_path, files);
             }
@@ -36,61 +37,43 @@ fn main() {
     let mut vec1 = Vec::new();
     let mut vec2 = Vec::new();
 
-    // Collect and sort files from directory 1
+    // Collect files from directory 1
     if dir1_path.exists() {
         collect_files(&dir1_path, &mut vec1);
-        vec1.sort();
-        
-        // Print directory 1 contents
-        println!("{}\n", dir1_path.display());
-        for file in &vec1 {
-            println!("  {}", file);
-        }
+        vec1.sort_by(|a, b| a.0.cmp(&b.0));
     }
 
-    // Collect and sort files from directory 2 if provided
+    // Collect files from directory 2 if provided
     if let Some(path) = dir2_path {
         if path.exists() {
             collect_files(&path, &mut vec2);
-            vec2.sort();
-            
-            // Print directory 2 contents
-            println!("{}\n", path.display());
-            for file in &vec2 {
-                println!("  {}", file);
-            }
+            vec2.sort_by(|a, b| a.0.cmp(&b.0));
             
             // Compare the two vectors and output differences
-            let hash1: HashSet<String> = HashSet::from_iter(vec1.iter().cloned());
-            let hash2: HashSet<String> = HashSet::from_iter(vec2.iter().cloned());
+            let hash1: HashSet<String> = HashSet::from_iter(vec1.iter().map(|(name, _)| name.clone()));
+            let hash2: HashSet<String> = HashSet::from_iter(vec2.iter().map(|(name, _)| name.clone()));
             
-            let unique_to_1: Vec<String> = hash1.difference(&hash2).cloned().collect();
-            let unique_to_2: Vec<String> = hash2.difference(&hash1).cloned().collect();
+            // Differences showing removed files from dir1 (unique to dir1, not in dir2)
+            let unique_to_1: Vec<(String, PathBuf)> = vec1.iter()
+                .filter(|(name, _)| !hash2.contains(name))
+                .cloned()
+                .collect();
             
-            println!("\nDifferences:\n");
+            // Differences showing added files to dir2 (unique to dir2, not in dir1)
+            let unique_to_2: Vec<(String, PathBuf)> = vec2.iter()
+                .filter(|(name, _)| !hash1.contains(name))
+                .cloned()
+                .collect();
             
-            if !unique_to_1.is_empty() {
-                println!("Unique to {}", &dir1_path.display());
-                for file in &unique_to_1 {
-                    println!("  {}", file);
-                }
+            // Output added files with +
+            for (name, _) in &unique_to_2 {
+                println!("+ {}", name);
             }
             
-            if !unique_to_2.is_empty() {
-                println!("\nUnique to {}", &path.display());
-                for file in &unique_to_2 {
-                    println!("  {}", file);
-                }
-            }
-            
-            let common: Vec<String> = hash1.intersection(&hash2).cloned().collect();
-            if !common.is_empty() {
-                println!("\nCommon files:");
-                for file in &common {
-                    println!("  {}", file);
-                }
+            // Output removed files from dir1 with -
+            for (name, _) in &unique_to_1 {
+                println!("- {}", name);
             }
         }
     }
 }
-
