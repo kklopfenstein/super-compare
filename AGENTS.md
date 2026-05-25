@@ -29,3 +29,4 @@ Output format: `+` for files added (only in dir2), `-` for files removed (only i
 - Write tests for every feature addition
 - Tests live in `tests/` and use `tempfile` for temp dirs
 - Tests call the debug binary directly from `target/debug/super-compare.exe`
+- Use only integration tests for end-to-end validation; never create directory structures manually or PowerShell scripts to test the program
