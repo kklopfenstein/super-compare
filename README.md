@@ -8,7 +8,7 @@ A command-line tool to compare directories and find differences between them.
 
 ```bash
 # Compare two directories
-super-compare <directory1> <directory2>
+super-compare [-s] <dir1> [dir2]
 ```
 
 ### Examples
@@ -17,8 +17,11 @@ super-compare <directory1> <directory2>
 # Compare two specific directories
 super-compare dir1 dir2
 
+# Compare directories with size comparison
+super-compare -s dir1 dir2
+
 # Compare directories with spaces in names
-super-compare "My Documents" "Work Files"
+super-compare -s "My Documents" "Work Files"
 ```
 
 ### Example Output
@@ -49,7 +52,7 @@ The executable will be in `target/release/super-compare.exe`
 - Detects unique files in each directory
 - Shows files that exist in both directories
 - Works with nested subdirectories
-- Displays clear, readable output
+- Compares file sizes when `-s` flag is used
 
 ## Testing
 

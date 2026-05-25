@@ -30,14 +30,21 @@ fn main() {
     
     let compare_sizes = args.contains(&"-s".to_string());
 
-    if args.len() < 2 {
-        eprintln!("Usage: super-compare <dir1> [dir2] [-s]");
+    if args.is_empty() {
+        eprintln!("Usage: super-compare [-s] <dir1> [dir2]");
         std::process::exit(1);
     }
 
-    let dir1_path = PathBuf::from(&args[0]);
-    let dir2_path = if args.len() > 1 {
-        Some(PathBuf::from(&args[1]))
+    let mut positional_args = Vec::new();
+    for arg in args {
+        if arg != "-s" {
+            positional_args.push(arg);
+        }
+    }
+
+    let dir1_path = PathBuf::from(&positional_args[0]);
+    let dir2_path = if positional_args.len() > 1 {
+        Some(PathBuf::from(&positional_args[1]))
     } else {
         None
     };

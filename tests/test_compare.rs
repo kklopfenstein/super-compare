@@ -95,7 +95,7 @@ fn test_compare_directory_sizes() {
 
     // Test with -s flag (should show ~ for size differences)
     let mut cmd = Command::new(&binary_path);
-    cmd.arg(&dir1_path).arg(&dir2_path).arg("-s");
+    cmd.arg("-s").arg(&dir1_path).arg(&dir2_path);
 
     let output = cmd.output().unwrap();
     let stdout = String::from_utf8(output.stdout).unwrap();
