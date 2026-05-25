@@ -32,3 +32,4 @@ Output format: `+` for files added (only in dir2), `-` for files removed (only i
 - Tests call the debug binary directly from `target/debug/super-compare.exe`
 - Use only integration tests for end-to-end validation; never create directory structures manually or PowerShell scripts to test the program
 - Update AGENTS.md if program usage changes
+- Develop each feature in a feature branch and create a pull request using `gh` CLI when completed
